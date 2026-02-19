@@ -6,8 +6,6 @@ Paste any email content, hit **INITIATE SCAN**, and get a clean â€œthreat scanâ€
 ---
 
 ## Demo UI
-
-## UI Preview
 ![ThreatLens UI](assets/ui.png)
 
 
