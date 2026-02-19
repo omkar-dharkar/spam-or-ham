@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ThreatLens | Mail Scanner</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+  <canvas id="bg"></canvas>
+
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">
+        <div class="logo">TL</div>
+        <div>
+          <div class="title">ThreatLens</div>
+          <div class="subtitle">Cyber Mail Threat Scanner</div>
+        </div>
+      </div>
+
+      <div class="status-pill">
+        <span class="dot"></span>
+        <span id="statusText">SYSTEM ONLINE</span>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card input-card">
+        <div class="card-head">
+          <h2>Paste Mail Content</h2>
+          <p>Run a deep scan for spam patterns and suspicious intent.</p>
+        </div>
+
+        <form id="scanForm" method="POST" action="{{ url_for('analyze_mail') }}">
+          <label class="label" for="mail">Message Payload</label>
+
+          <textarea
+            class="textarea"
+            id="mail"
+            name="mail"
+            rows="10"
+            placeholder="Paste the email text here..."
+          >{{ mail or "" }}</textarea>
+
+          <div class="actions">
+            <button id="scanBtn" type="submit" class="btn">
+              <span class="btn-glow"></span>
+              <span class="btn-text">INITIATE SCAN</span>
+              <span class="btn-icon">▸</span>
+            </button>
+
+            <button id="clearBtn" type="button" class="btn ghost">
+              CLEAR
+            </button>
+          </div>
+
+          <div class="micro">
+            <span class="kbd">Tip</span>
+            Try spammy lines like “Congratulations you won…” or urgent money requests.
+          </div>
+        </form>
+      </section>
+
+      <section class="card result-card">
+        <div class="card-head">
+          <h2>Scan Output</h2>
+          <p>Threat score and classification will appear here.</p>
+        </div>
+
+        <div class="scanner">
+          <div class="scanner-frame">
+            <div class="scanline" id="scanline"></div>
+            <div class="noise"></div>
+
+            <div class="hud">
+              <div class="hud-row">
+                <div class="hud-label">MODE</div>
+                <div class="hud-val" id="hudMode">PASSIVE</div>
+              </div>
+              <div class="hud-row">
+                <div class="hud-label">SIGNATURES</div>
+                <div class="hud-val" id="hudSig">LOADED</div>
+              </div>
+              <div class="hud-row">
+                <div class="hud-label">ENGINE</div>
+                <div class="hud-val">LR + TF-IDF</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="meter">
+            <div class="meter-top">
+              <div class="meter-title">Threat Meter</div>
+              <div class="meter-value"><span id="meterPct">0</span>%</div>
+            </div>
+            <div class="bar">
+              <div class="bar-fill" id="barFill"></div>
+            </div>
+            <div class="meter-foot" id="meterText">Awaiting scan…</div>
+          </div>
+
+          <div class="result-panel" id="resultPanel">
+            {% if classify is not none %}
+              {% if classify == 0 %}
+                <div class="badge danger">THREAT DETECTED</div>
+                <div class="result-title">SPAM / PHISHING SIGNALS</div>
+                <div class="result-desc">
+                  Suspicious patterns found. Treat as hostile until verified.
+                </div>
+              {% elif classify == 1 %}
+                <div class="badge safe">CLEAN SIGNAL</div>
+                <div class="result-title">HAM / LEGIT MESSAGE</div>
+                <div class="result-desc">
+                  No strong malicious signals detected. Still use common sense.
+                </div>
+              {% endif %}
+
+              {% if confidence is not none %}
+                <div class="confidence">
+                  Model confidence: <span class="mono">{{ (confidence * 100) | round(1) }}%</span>
+                </div>
+              {% endif %}
+            {% else %}
+              <div class="badge neutral">NO DATA</div>
+              <div class="result-title">RUN A SCAN</div>
+              <div class="result-desc">
+                Paste a message and initiate scan to generate a threat profile.
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span class="mono">v1.0</span> • Threat simulation UI • Local inference
+    </footer>
+  </div>
+
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="overlay-card">
+      <div class="overlay-title">SCANNING PAYLOAD</div>
+      <div class="loader">
+        <div class="loader-bar" id="loaderBar"></div>
+      </div>
+      <div class="overlay-text" id="overlayText">Initializing signatures…</div>
+      <div class="overlay-sub mono">Hold tight 😈</div>
+    </div>
+  </div>
+
+  <script>
+    window.__SCAN__ = {
+      hasResult: {{ 'true' if classify is not none else 'false' }},
+      label: {{ classify if classify is not none else 'null' }},
+      confidence: {{ confidence if confidence is not none else 'null' }}
+    };
+  </script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
