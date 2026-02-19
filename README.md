@@ -140,4 +140,4 @@ Thumbs.db
 
 ## License
 
-MIT (or choose your own)
+This project is licensed under the MIT License. See the `LICENSE` file for details.
