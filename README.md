@@ -4,6 +4,9 @@ A cyber-themed Flask web app that classifies email text as **SPAM** or **HAM** u
 Paste any email content, hit **INITIATE SCAN**, and get a clean “threat scan” style result with confidence.
 
 ---
+## Live Demo
+**InboxIQ (Render):** https://inboxiq-idjs.onrender.com/
+
 
 ## Demo UI
 ![ThreatLens UI](assets/ui.png)
